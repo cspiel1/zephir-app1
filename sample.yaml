@@ -1,0 +1,10 @@
+sample:
+  description: First application using re
+  name: re_example
+common:
+  harness: net
+  tags:
+    - net
+    - socket
+  filter: TOOLCHAIN_HAS_NEWLIB == 1
+  depends_on: re
