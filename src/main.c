@@ -12,10 +12,45 @@
 #include <unistd.h>
 
 #include <re.h>
+#include <baresip.h>
+
+
+int extern_baresip_config(struct conf *conf)
+{
+	conf_set(conf, "sip_listen", "0.0.0.0:5060");
+	conf_set(conf, "rtp_stats", "no");
+	conf_set(conf, "rtcp_enable", "no");
+	conf_set(conf, "module", "g711");
+	conf_set(conf, "module", "auwm8960\n");
+	conf_set(conf, "module_app", "menu\n");
+
+	conf_set(conf, "audio_player", "auwm8960\n");
+	conf_set(conf, "audio_source", "auwm8960\n");
+	conf_set(conf, "audio_alert", "auwm8960\n");
+	conf_set(conf, "audio_channels", "1\n");
+	conf_set(conf, "audio_srate", "8000\n");
+
+	return config_parse_conf(conf_config(), conf);
+}
+
 
 int main(void)
 {
 	struct timeval tv;
+	int err;
+
+	err = libre_init();
+	if (err) {
+		warning("Could not init libre\n");
+		return err;
+	}
+
+	err  = conf_configure();
+	err |= extern_baresip_config(conf_cur());
+	if (err) {
+		warning("Could not configure baresip.\n");
+		return err;
+	}
 
 	while (1) {
 		int res = gettimeofday(&tv, NULL);
