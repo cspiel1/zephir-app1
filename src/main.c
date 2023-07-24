@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <errno.h>
 #include <sys/time.h>
 #include <time.h>
@@ -34,9 +35,18 @@ int extern_baresip_config(struct conf *conf)
 }
 
 
+static void ua_exit_handler(void *arg)
+{
+	(void)arg;
+	debug("ua exited -- stopping main runloop\n");
+
+	/* The main run-loop can be stopped now */
+	re_cancel();
+}
+
+
 int main(void)
 {
-	struct timeval tv;
 	int err;
 
 	err = libre_init();
@@ -52,21 +62,40 @@ int main(void)
 		return err;
 	}
 
-	while (1) {
-		int res = gettimeofday(&tv, NULL);
-		time_t now = time(NULL);
-		struct tm tm;
-		localtime_r(&now, &tm);
-
-		if (res < 0) {
-			printf("Error in gettimeofday(): %d\n", errno);
-			return 1;
-		}
-
-		re_printf("gettimeofday(): HI(tv_sec)=%d, LO(tv_sec)=%d, "
-		       "tv_usec=%d\n\t%s\n", (unsigned int)(tv.tv_sec >> 32),
-		       (unsigned int)tv.tv_sec, (unsigned int)tv.tv_usec,
-		       asctime(&tm));
-		sleep(1);
+	err = baresip_init(conf_config());
+	if (err) {
+		warning("Could not initialize baresip\n");
+		goto out;
 	}
+
+	err = ua_init(NULL, true, true, false);
+	if (err)
+		goto out;
+
+	uag_set_exit_handler(ua_exit_handler, NULL);
+
+	/* Load modules */
+	err = conf_modules();
+	if (err)
+		goto out;
+
+	err = re_main(NULL);
+
+out:
+
+	ua_stop_all(true);
+
+	ua_close();
+	conf_close();
+
+	baresip_close();
+
+	info("main: unloading modules\n");
+	mod_close();
+
+	libre_close();
+
+	// Check for memory leaks
+	tmr_debug();
+	mem_debug();
 }
