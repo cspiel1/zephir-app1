@@ -45,21 +45,21 @@ static void ua_exit_handler(void *arg)
 }
 
 
-int main(void)
+static void *baresip_thread(void *arg)
 {
 	int err;
 
 	err = libre_init();
 	if (err) {
 		warning("Could not init libre\n");
-		return err;
+		return NULL;
 	}
 
 	err  = conf_configure();
 	err |= extern_baresip_config(conf_cur());
 	if (err) {
 		warning("Could not configure baresip.\n");
-		return err;
+		return NULL;
 	}
 
 	err = baresip_init(conf_config());
@@ -98,4 +98,16 @@ out:
 	// Check for memory leaks
 	tmr_debug();
 	mem_debug();
+	return NULL;
+}
+
+
+int main(void)
+{
+	pthread_t tid;
+
+	(void) pthread_create(&tid, NULL, baresip_thread, NULL);
+	while (1) {
+		sleep(1);
+	}
 }
