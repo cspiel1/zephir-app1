@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <zephyr/net/net_config.h>
 
 #include <re.h>
 #include <baresip.h>
@@ -79,8 +80,9 @@ static void *baresip_thread(void *arg)
 	if (err)
 		goto out;
 
+	printf("Starting main loop now ...\n");
 	err = re_main(NULL);
-
+	printf("Main loop left\n");
 out:
 
 	ua_stop_all(true);
@@ -102,11 +104,26 @@ out:
 }
 
 
+static void receiver_cb(struct net_mgmt_event_callback *cb,
+			uint32_t nm_event, struct net_if *iface)
+{
+	printf("%s:%d HUUUUUU %u\n", __func__, __LINE__, nm_event);
+	if (nm_event == NET_EVENT_IPV4_ADDR_ADD) {
+		printf("Got IP:\n");
+	}
+}
+
+
 int main(void)
 {
+	struct net_mgmt_event_callback rx_cb;
 	pthread_t tid;
 
 	(void) pthread_create(&tid, NULL, baresip_thread, NULL);
+	net_mgmt_init_event_callback(&rx_cb, receiver_cb,
+				     NET_EVENT_IPV4_ADDR_ADD);
+	net_mgmt_add_event_callback(&rx_cb);
+
 	while (1) {
 		sleep(1);
 	}

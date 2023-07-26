@@ -7,4 +7,7 @@ project(app1)
 
 target_include_directories(app PRIVATE ${ZEPHYR_BASE}/subsys/net/ip)
 
-target_sources(app PRIVATE src/main.c)
+target_sources(app PRIVATE
+	src/main.c
+	src/static.c
+)
