@@ -80,6 +80,7 @@ static void *baresip_thread(void *arg)
 	if (err)
 		goto out;
 
+	ua_alloc(NULL, "<sip:zephyr@localhost>;answermode=auto");
 	printf("Starting main loop now ...\n");
 	err = re_main(NULL);
 	printf("Main loop left\n");
