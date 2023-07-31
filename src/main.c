@@ -22,6 +22,7 @@ int extern_baresip_config(struct conf *conf)
 	conf_set(conf, "sip_listen", "0.0.0.0:5060");
 	conf_set(conf, "rtp_stats", "no");
 	conf_set(conf, "rtcp_enable", "no");
+	conf_set(conf, "module", "opus");
 	conf_set(conf, "module", "g711");
 	conf_set(conf, "module", "auwm8960\n");
 	conf_set(conf, "module_app", "menu\n");
@@ -31,6 +32,9 @@ int extern_baresip_config(struct conf *conf)
 	conf_set(conf, "audio_alert", "auwm8960\n");
 	conf_set(conf, "audio_channels", "1\n");
 	conf_set(conf, "audio_srate", "8000\n");
+
+	conf_set(conf, "opus_stereo", "no\n");
+	conf_set(conf, "opus_sprop_stereo", "no\n");
 
 	return config_parse_conf(conf_config(), conf);
 }

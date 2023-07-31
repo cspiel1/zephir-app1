@@ -6,6 +6,7 @@ extern const struct mod_export exports_auresamp;
 extern const struct mod_export exports_auwm8960;
 extern const struct mod_export exports_g711;
 extern const struct mod_export exports_menu;
+extern const struct mod_export exports_opus;
 
 
 const struct mod_export *mod_table[] = {
@@ -14,6 +15,7 @@ const struct mod_export *mod_table[] = {
   &exports_auwm8960,
   &exports_g711,
   &exports_menu,
+  &exports_opus,
 
   NULL
 };
