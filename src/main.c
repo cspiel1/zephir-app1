@@ -25,16 +25,17 @@ int extern_baresip_config(struct conf *conf)
 	conf_set(conf, "module", "opus");
 	conf_set(conf, "module", "g711");
 	conf_set(conf, "module", "auwm8960\n");
+	conf_set(conf, "module", "auresamp\n");
 	conf_set(conf, "module_app", "menu\n");
 
 	conf_set(conf, "audio_player", "auwm8960\n");
 	conf_set(conf, "audio_source", "auwm8960\n");
 	conf_set(conf, "audio_alert", "auwm8960\n");
-	conf_set(conf, "audio_channels", "1\n");
-	conf_set(conf, "audio_srate", "8000\n");
+/*        conf_set(conf, "audio_channels", "2\n");*/
+/*        conf_set(conf, "audio_srate", "48000\n");*/
 
-	conf_set(conf, "opus_stereo", "no\n");
-	conf_set(conf, "opus_sprop_stereo", "no\n");
+	conf_set(conf, "opus_stereo", "yes\n");
+	conf_set(conf, "opus_sprop_stereo", "yes\n");
 
 	return config_parse_conf(conf_config(), conf);
 }
